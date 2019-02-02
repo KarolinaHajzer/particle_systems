@@ -1,53 +1,83 @@
 from unittest import TestCase
-from particle_systems_functions import *
-from Disc import *
-import types
+
+# Grupujemy importy, patrz narzędzie isort
+from Disc import Disc
+
+# Nie importujemy wszystkiego z modułu
+from particle_systems_functions import (
+    adding_disc_into_list,
+    calc_distance,
+    changing_grav_force,
+    changing_gravity_force,
+    discs,
+    gravity_force,
+    making_grav_points,
+    removing_disc_from_list,
+    unit_vector,
+)
 
 
 class ParticleSystemsFunctionsTest(TestCase):
     def test_calc_distance(self):
-        p1 = [3, 5]
-        p2 = [2, 4]
-        function_result = calc_distance(p1, p2)
-        d = math.sqrt((-1*-1) + (-1*-1))
-        assert function_result == d
+        # Nie powtarzaj kodu funkcji w teście
+        # Nie twórz zmiennych, które użyjesz tylko raz
+        function_result = calc_distance([3, 5], [2, 4])
 
+        # Ta zmienna ma sens bo jeśli w jednej linii jest zbyt wiele
+        # operacji, to potem nie wiadomo co nawaliło.
+        # assertEqual jest fajny bo porówna cokolwiek mu damy
+        self.assertEqual(function_result, 1.4142135623730951)
+
+    # Rozdzielanie faz testu. Komentarze są zbędne i służą tylko celom
+    # edukacyjnym :)
     def test_unit_vector(self):
-        disc1 = Disc()
-        disc2 = Disc()
-        disc1.disc_pos = [3, 5]
-        disc2.disc_pos = [2, 4]
-        d = math.sqrt((-1 * -1) + (-1 * -1))
-        v = [-1, -1]
-        nx = v[0] / d
-        ny = v[1] / d
-        n = [nx, ny]
+        # Arrange
+        disc1, disc2 = self._prepare_discs()
+
+        # Act
         function_result = unit_vector(disc1, disc2)
-        assert n == function_result
+
+        # Assert
+        self.assertEqual(
+            function_result,
+            [-0.7071067811865475, -0.7071067811865475],
+        )
 
     def test_gravity_force(self):
+        disc1, disc2 = self._prepare_discs()
+        disc1.m = 2
+        disc2.m = 3
+
+        function_result = gravity_force(disc1, disc2)
+
+        self.assertEqual(
+            function_result,
+            [-4.242640687119285, -4.242640687119285],
+        )
+
+    # Funkcje pomocnicze pomagają uwspólniać powtarzające się części kodu
+    # Warto je robić gdy kod powtarza się w trzech miejscach, więc
+    # w tym przypadku jest to lekki overkill
+    @staticmethod
+    def _prepare_discs():
         disc1 = Disc()
         disc2 = Disc()
         disc1.disc_pos = [3, 5]
         disc2.disc_pos = [2, 4]
-        disc1.m = 2
-        disc2.m = 3
-        G = 1
-        n = unit_vector(disc1, disc2)
-        dist = calc_distance(disc1.disc_pos, disc2.disc_pos)
-        gravity_force_x = G * disc1.m * disc2.m / dist * dist * n[0]
-        gravity_force_y = G * disc1.m * disc2.m / dist * dist * n[1]
-        function_result = gravity_force(disc1, disc2)
-        assert [gravity_force_x, gravity_force_y] == function_result
+        return disc1, disc2
 
     def test_adding_disc_into_list(self):
-        list_of_discs = []
-        d = list_of_discs.append(Disc())
-        function_result = adding_disc_into_list()
-        assert d == function_result
+        adding_disc_into_list()
+
+        self.assertEqual(len(discs), 1)
+        disc_vars = self._get_disc_vars(discs[0])
+        self.assertEqual(disc_vars, {
+            'disc_pos': [100, 50],
+            'Fw': [0, 0],
+            'life_duration': 0,
+        })
 
     def test_removing_disc_from_list(self):
-        are_equal = False
         disc1 = Disc()
         length1 = len(discs)
         discs.append(disc1)
@@ -57,30 +87,44 @@ class ParticleSystemsFunctionsTest(TestCase):
         discs.append(disc1)
         removing_disc_from_list(disc1)
         length3 = len(discs)
-        if length1 == length2 and length2 == length3:
-            are_equal = True
-        self.assertTrue(are_equal)
+
+        self.assertEqual(length1, length2)
+        self.assertEqual(length2, length3)
 
     def test_changing_gravity_force(self):
-        list_of_gravity_force_for_changing = [2, 3]
-        function_result = changing_gravity_force(list_of_gravity_force_for_changing)
-        assert [-2, -3] == function_result
+        function_result = changing_gravity_force([2, 3])
+
+        self.assertEqual(function_result, [-2, -3])
 
     def test_making_grav_points(self):
-        grav_points_list = []
-        lista = [2, [[150, 200], [500, 450]]]
-        grav_point_pos = lista[1]
-        for one_grav_point in grav_point_pos:
-            grav_point = Disc()
-            grav_point.m = 40
-            grav_point.r = 10
-            grav_point.color = (0, 0, 0)
-            grav_point.disc_pos = [one_grav_point[0], one_grav_point[1]]
-            grav_points_list.append(grav_point)
-        function_result = making_grav_points(lista)
-        assert len(grav_points_list) == len(function_result)
+        function_result = making_grav_points([2, [[150, 200], [500, 450]]])
+
+        self.assertEqual(len(function_result), 2)
+        # Tak nie rób. Zamiast tego można by było zdefiniować operator
+        # porównania na obiektach Disc
+        disc_vars = self._get_disc_vars(function_result[0])
+        self.assertEqual(disc_vars, {
+            'disc_pos': [150, 200],
+            'Fw': [0, 0],
+            'life_duration': 0,
+        })
+        disc_vars = self._get_disc_vars(function_result[1])
+        self.assertEqual(disc_vars, {
+            'disc_pos': [500, 450],
+            'Fw': [0, 0],
+            'life_duration': 0,
+        })
 
     def test_changing_grav_force(self):
-        grav_force_list = [[2, 3]]
-        changed_grav_force_list = [[-2, -3]]
-        assert changed_grav_force_list == changing_grav_force(grav_force_list)
+        changed_grav_force_list = changing_grav_force([[2, 3]])
+
+        self.assertEqual(changed_grav_force_list, [[-2, -3]])
+
+    @staticmethod
+    def _get_disc_vars(disc):
+        disc_vars = vars(disc)
+        del disc_vars['v']
+        del disc_vars['r']
+        del disc_vars['color']
+        del disc_vars['m']
+        return disc_vars
