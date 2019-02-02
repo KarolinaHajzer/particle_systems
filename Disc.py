@@ -1,4 +1,5 @@
 import random
+
 dt = 0.1
 width = 1200
 height = 700

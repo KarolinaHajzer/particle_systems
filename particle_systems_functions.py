@@ -14,9 +14,11 @@
     - making_force_from_grav_points_list
 """
 
-from Disc import *
-import pygame
 import math
+
+import pygame
+
+from Disc import *
 
 window = pygame.display.set_mode((width, height))
 discs = []

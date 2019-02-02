@@ -2,7 +2,6 @@ from unittest import TestCase
 
 # Grupujemy importy, patrz narzędzie isort
 from Disc import Disc
-
 # Nie importujemy wszystkiego z modułu
 from particle_systems_functions import (
     adding_disc_into_list,
@@ -13,7 +12,7 @@ from particle_systems_functions import (
     gravity_force,
     making_grav_points,
     removing_disc_from_list,
-    unit_vector,
+    unit_vector
 )
 
 
