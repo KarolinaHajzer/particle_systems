@@ -5,3 +5,6 @@ Small program that shows gravity force between particles and gravity points.
 
 You can choose how many gravity points do you want and location of these gravity points.
 While pressing the mouse button instead of the attraction force is the repulsive force between the gravity point and the molecule.
+
+The physics of molecules is calculated using the Euler formula.
+Pygame was used to display the graphics.
