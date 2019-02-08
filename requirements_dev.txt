@@ -1,0 +1,4 @@
+pycodestyle
+isort
+pylint
+coverage
